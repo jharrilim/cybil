@@ -1,0 +1,7 @@
+[package]
+name = "cybil_core"
+version = "0.1.0"
+authors = ["Joseph Harrison-Lim <Josephharrisonlim@gmail.com>"]
+edition = "2018"
+
+[dependencies]
