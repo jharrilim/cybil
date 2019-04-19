@@ -1,13 +1,14 @@
 use crate::neuron::Neuron;
 
-pub struct Synapse<'neuron> {
-    a: &'neuron Neuron,
-    b: &'neuron Neuron
+pub struct Synapse<'n> {
+    a: &'n Neuron,
+    b: &'n Neuron,
+    weight: f32
 }
 
-impl Synapse {
-    pub fn new(&a: Neuron, &b: Neuron) -> Synapse {
-        Synapse { a, b }
+impl <'n> Synapse<'n> {
+    pub fn new(a: &'n Neuron, b: &'n Neuron) -> Synapse<'n> {
+        Synapse { a, b, weight: 1f32 }
     }
-    
+
 }
