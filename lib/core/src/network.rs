@@ -2,13 +2,15 @@ use crate::point::Point;
 use crate::neuron::Neuron;
 
 pub struct Network {
-    neurons: Vec<Neuron>
+    neurons: Vec<Neuron>,
+    center: Point
 }
 
 impl Network {
     pub fn new() -> Network {
         Network {
-            neurons: Vec::<Neuron>::new()
+            neurons: Vec::<Neuron>::new(),
+            center: Point::new(0f32, 0f32)
         }
     }
 
