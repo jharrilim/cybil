@@ -27,4 +27,12 @@ impl Network {
         self.neurons.extend(neurons)
     }
 
+    pub fn add_hidden_layer(&mut self, size: u32) {
+        if size == 0 {
+            self.hidden_layer_matrix.push(Vec::new());
+        } else {
+            let layer: Vec<Neuron> = (0..size).map(|_| Neuron::new()).collect::<Vec<Neuron>>();
+            self.hidden_layer_matrix.push(layer);
+        }
+    }
 }
