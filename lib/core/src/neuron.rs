@@ -1,5 +1,5 @@
-use crate::point::Point;
+use nalgebra::base::Vector2;
 
 pub struct Neuron {
-    pub location: Point
+    pub location: Vector2<f32>
 }

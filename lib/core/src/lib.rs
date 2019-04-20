@@ -1,8 +1,10 @@
 extern crate wasm_bindgen;
+extern crate rand;
+extern crate nalgebra;
+
 use wasm_bindgen::prelude::*;
 
 mod activation;
-mod point;
 mod neuron;
 mod network;
 mod synapse;
