@@ -38,21 +38,22 @@ impl Network {
         let net_ref = &mut network;
         let amount_of_layers = shape.len();
         // create first layer
-        net_ref.nodes_indices.push(Network::create_layer(shape[0], activation, net_ref));
+        let first_layer = Network::create_layer(shape[0], activation, net_ref);
+        net_ref.nodes_indices.push(first_layer);
         // create hidden layers and link neurons with synapses
         for layer_idx in 1..amount_of_layers {
             let layer = Network::create_layer(shape[layer_idx], activation, net_ref);
-            net_ref.nodes_indices.push(layer);
-            for mut neur_idx in layer {
+            for neur_idx in layer.clone() {
                 // link this neuron with every neuron from the previous layer
                 let mut edge_indices = Vec::<EdgeIndex<u32>>::new();
-                for mut prev_neur_idx in network.nodes_indices[layer_idx - 1] {
+                for prev_neur_idx in &net_ref.nodes_indices[layer_idx - 1] {
                     let syn = Synapse::new();
-                    let edge = network.neuron_graph.add_edge(prev_neur_idx, neur_idx, syn);
+                    let edge = net_ref.neuron_graph.add_edge(*prev_neur_idx, neur_idx, syn);
                     edge_indices.push(edge);
                 }
                 net_ref.edges_indices.push(edge_indices);
             }
+            net_ref.nodes_indices.push(layer);
         }
         network
     }
@@ -67,13 +68,14 @@ impl Network {
     }
 
     pub fn update_output(&mut self, neuron_index: NodeIndex<u32>) -> f32 {
-        let n = &mut self.neuron_graph[neuron_index];
-        n.input_total = n.bias;
+        let mut input_total = self.neuron_graph[neuron_index].bias.clone();
         for edge in self.neuron_graph.edges_directed(neuron_index, Direction::Incoming) {
-            n.input_total += edge.weight().weight * (self.neuron_graph[edge.source()].output);
+            input_total += edge.weight().weight * (self.neuron_graph[edge.source()].output);
         }
-        n.output = activation_from(n.activation)(n.input_total);
-        n.output
+        let neuron = &mut self.neuron_graph[neuron_index];
+        neuron.input_total = input_total;
+        neuron.output = activation_from(neuron.activation)(neuron.input_total);
+        neuron.output.clone()
     }
 
     pub fn forward_prop(&mut self, inputs: Vec<f32>) {
