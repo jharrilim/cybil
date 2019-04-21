@@ -4,7 +4,6 @@ extern crate nalgebra;
 extern crate petgraph;
 
 use wasm_bindgen::prelude::*;
-
 mod activation;
 mod neuron;
 mod network;
