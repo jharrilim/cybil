@@ -6,7 +6,7 @@ pub struct Neuron {
     outputs: Vec<Synapse>,
     bias: f32,
     input_total: u32,
-    output_total: u32,
+    output: f32,
 
     /// Error derivative with respect to the node's output.
     output_derivative: f32,
@@ -36,12 +36,15 @@ impl Neuron {
             outputs: Vec::new(),
             bias: 0.1f32,
             input_total: 0,
-            output_total: 0,
+            output: 0f32,
             output_derivative: 0f32,
             input_derivative: 0f32,
             accumulated_input_derivative: 0f32,
             accumulated_derivatives: 0,
             activation
         }
+    }
+    pub fn update_output(&mut self, output: f32) {
+        self.output = output;
     }
 }

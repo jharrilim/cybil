@@ -4,7 +4,8 @@ use crate::activation::Activation;
 pub struct Network {
     neurons: Vec<Neuron>,
     hidden_layer_matrix: Vec<Vec<Neuron>>,
-    epoch: u64
+    epoch: u64,
+    activation: Activation
 }
 
 impl Network {
@@ -12,7 +13,8 @@ impl Network {
         Network {
             neurons: Vec::<Neuron>::new(),
             hidden_layer_matrix: Vec::new(),
-            epoch: 0u64
+            epoch: 0u64,
+            activation: Activation::ReLU
         }
     }
 
@@ -37,9 +39,21 @@ impl Network {
         }
     }
 
+
+
     pub fn remove_hidden_layer_at(&mut self, index: usize) {
         self.hidden_layer_matrix.remove(index);
     }
 
+    pub fn forward_prop(&mut self, inputs: Vec<f32>) {
+        self.neurons.clear();
+        self.neurons = (0..inputs.len())
+            .map(|i| {
+                let mut n = Neuron::new(self.activation);
+                n.update_output(inputs[i]);
+                n
+            }
+        ).collect::<Vec<Neuron>>();
+    }
 }
 
