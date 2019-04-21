@@ -1,6 +1,7 @@
 extern crate wasm_bindgen;
 extern crate rand;
 extern crate nalgebra;
+extern crate petgraph;
 
 use wasm_bindgen::prelude::*;
 

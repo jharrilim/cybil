@@ -1,21 +1,18 @@
-use nalgebra::Vector2;
-
 use crate::neuron::Neuron;
-use nalgebra::base::Matrix;
-use nalgebra::base::dimension::Dynamic;
+use crate::activation::Activation;
 
 pub struct Network {
     neurons: Vec<Neuron>,
-    center: Vector2<f32>,
-    hidden_layer_matrix: Vec<Vec<Neuron>>
+    hidden_layer_matrix: Vec<Vec<Neuron>>,
+    epoch: u64
 }
 
 impl Network {
     pub fn new() -> Network {
         Network {
             neurons: Vec::<Neuron>::new(),
-            center: Vector2::new(0f32, 0f32),
-            hidden_layer_matrix: Vec::new()
+            hidden_layer_matrix: Vec::new(),
+            epoch: 0u64
         }
     }
 
@@ -27,12 +24,22 @@ impl Network {
         self.neurons.extend(neurons)
     }
 
-    pub fn add_hidden_layer(&mut self, size: u32) {
+    pub fn add_hidden_layer(&mut self, size: u32, activation: Option<Activation>) {
         if size == 0 {
             self.hidden_layer_matrix.push(Vec::new());
         } else {
-            let layer: Vec<Neuron> = (0..size).map(|_| Neuron::new()).collect::<Vec<Neuron>>();
+            let layer: Vec<Neuron> = (0..size)
+                .map(|_| Neuron::new(
+                    activation
+                        .unwrap_or(Activation::ReLU)
+                )).collect::<Vec<Neuron>>();
             self.hidden_layer_matrix.push(layer);
         }
     }
+
+    pub fn remove_hidden_layer_at(&mut self, index: usize) {
+        self.hidden_layer_matrix.remove(index);
+    }
+
 }
+
