@@ -95,7 +95,7 @@ impl Network {
         // update layers
         let layer_count = self.nodes_indices.len();
         for i in 1..layer_count {
-            let mut node_indices = &self.nodes_indices[i].clone();
+            let node_indices = &self.nodes_indices[i].clone();
             for node_idx in node_indices {
                 self.update_output(*node_idx);
             }
@@ -104,3 +104,17 @@ impl Network {
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    pub fn create_network() {
+        let n = Network::create(
+            [2,4,2].to_vec(),
+            Option::Some(Activation::Tanh),
+            Option::from(Activation::Sigmoid)
+        );
+
+    }
+}

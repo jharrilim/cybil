@@ -14,10 +14,8 @@ impl Synapse {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::point::Point;
-    use nalgebra::geometry::Vector2;
-    use crate::activation::Activation;
 
+    #[test]
     pub fn create_synapse() {
         let syn = Synapse::new();
     }
