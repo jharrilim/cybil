@@ -84,4 +84,19 @@ impl ActivationFunction for Linear {
 #[cfg(test)]
 mod test {
     use super::*;
+
+    #[test]
+    fn activation_from_returns_correct_fn() {
+        assert_eq!(activation_from(Activation::Sigmoid)(5f32), Sigmoid::call(5f32));
+        assert_eq!(activation_derivative(Activation::Sigmoid)(5f32), Sigmoid::first_prime(5f32));
+        
+        assert_eq!(activation_from(Activation::Linear)(100f32), Linear::call(100f32));
+        assert_eq!(activation_derivative(Activation::Linear)(100f32), Linear::first_prime(100f32));
+
+        assert_eq!(activation_from(Activation::ReLU)(42f32), Relu::call(42f32));
+        assert_eq!(activation_derivative(Activation::ReLU)(9090f32), Relu::first_prime(9090f32));
+
+        assert_eq!(activation_from(Activation::Tanh)(0.101238f32), Tanh::call(0.101238f32));
+        assert_eq!(activation_derivative(Activation::Tanh)(0.101238f32), Tanh::first_prime(0.101238f32));
+    }
 }

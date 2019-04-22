@@ -41,3 +41,13 @@ impl Neuron {
     }
 }
 
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    pub fn create_neuron() {
+        Neuron::new(Activation::ReLU);
+    }
+}

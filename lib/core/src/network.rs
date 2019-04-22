@@ -111,7 +111,7 @@ mod tests {
 
     #[test]
     pub fn create_network() {
-        let mut n = Network::create(
+        Network::create(
             [2, 4, 2].to_vec(),
             Option::Some(Activation::Tanh),
             Option::from(Activation::Sigmoid)

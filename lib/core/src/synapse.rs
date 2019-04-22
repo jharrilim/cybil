@@ -17,6 +17,6 @@ mod tests {
 
     #[test]
     pub fn create_synapse() {
-        let syn = Synapse::new();
+        Synapse::new();
     }
 }
