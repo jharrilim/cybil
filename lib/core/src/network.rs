@@ -67,7 +67,7 @@ impl Network {
             .collect::<Vec<NodeIndex<u32>>>()
     }
 
-    pub fn update_output(&mut self, neuron_index: NodeIndex<u32>) -> f32 {
+    fn update_output(&mut self, neuron_index: NodeIndex<u32>) -> f32 {
         let mut input_total = self.neuron_graph[neuron_index].bias.clone();
         for edge in self.neuron_graph.edges_directed(neuron_index, Direction::Incoming) {
             input_total += edge.weight().weight * (self.neuron_graph[edge.source()].output);
@@ -75,6 +75,7 @@ impl Network {
         let neuron = &mut self.neuron_graph[neuron_index];
         neuron.input_total = input_total;
         neuron.output = activation_from(neuron.activation)(neuron.input_total);
+        println!("Neuron output: {}", neuron.output);
         neuron.output.clone()
     }
 
@@ -110,11 +111,37 @@ mod tests {
 
     #[test]
     pub fn create_network() {
-        let n = Network::create(
-            [2,4,2].to_vec(),
+        let mut n = Network::create(
+            [2, 4, 2].to_vec(),
             Option::Some(Activation::Tanh),
             Option::from(Activation::Sigmoid)
         );
+    }
 
+    #[test]
+    pub fn forward_prop_returns_value_when_given_correct_number_of_inputs() {
+        // 4 inputs in the first position
+        let shape = [4, 4, 2].to_vec();
+        let mut n = Network::create(
+            shape,
+            Option::from(Activation::ReLU),
+            Option::None
+        );
+        // 4 inputs
+        let inputs = [1f32, 5f32, 2601f32, 19238.192f32].to_vec();
+        let r = n.forward_prop(inputs);
+        assert_ne!(r.unwrap_or(0f32), 0f32);
+    }
+
+    #[test]
+    pub fn forward_prop_returns_error_when_given_wrong_number_of_inputs() {
+        let shape = [1, 2, 3].to_vec();
+        let mut n = Network::create(
+            shape,
+            Option::from(Activation::Linear),
+            Option::from(Activation::Sigmoid)
+        );
+        let inputs = [1f32, 1000f32, 32f32].to_vec();
+        assert!(n.forward_prop(inputs).is_err());
     }
 }
