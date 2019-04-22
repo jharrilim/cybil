@@ -75,7 +75,7 @@ impl ActivationFunction for Linear {
         a
     }
 
-    fn first_prime(a: f32) -> f32 {
+    fn first_prime(_a: f32) -> f32 {
         1f32
     }
 }

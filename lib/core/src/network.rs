@@ -78,22 +78,29 @@ impl Network {
         neuron.output.clone()
     }
 
-    pub fn forward_prop(&mut self, inputs: Vec<f32>) {
+    pub fn forward_prop(&mut self, inputs: Vec<f32>) -> Result<f32, &str> {
+        // Make sure inputs length matches the size of the input vector in the matrix
+        if self.nodes_indices[0].len() != inputs.len() {
+            return Err("There must be the same amount of inputs as there are nodes in the input layer.");
+        }
+
         // setup input layer
-//        self.neuron_graph[0] = (0..inputs.len())
-//            .map(|i| {
-//                let mut n = Neuron::new(self.activation);
-//                n.output = inputs[i];
-//                n
-//            }
-//        ).collect::<Vec<Neuron>>();
-//
-//        for i in 1..self.neuron_graph.len() {
-//            let layer = self.neuron_graph[i];
-//            for mut node in layer {
-//                node.update_output();
-//            }
-//        }
+        let mut i = 0;
+        for node_idx in self.nodes_indices[0].iter() {
+            let mut o = &mut self.neuron_graph[*node_idx];
+            o.output = inputs[i];
+            i += 1;
+        }
+
+        // update layers
+        let layer_count = self.nodes_indices.len();
+        for i in 1..layer_count {
+            let mut node_indices = &self.nodes_indices[i].clone();
+            for node_idx in node_indices {
+                self.update_output(*node_idx);
+            }
+        }
+        Ok(self.neuron_graph[self.nodes_indices[layer_count - 1][0]].output)
     }
 }
 
