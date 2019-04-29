@@ -7,6 +7,7 @@ mod activation;
 mod neuron;
 mod network;
 mod synapse;
+mod error_function;
 
 #[wasm_bindgen]
 extern {

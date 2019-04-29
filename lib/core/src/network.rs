@@ -9,6 +9,7 @@ use petgraph::prelude::{
     Direction
 };
 use petgraph::visit::EdgeRef;
+use crate::error_function::ErrorFunc;
 
 pub struct Network {
     neuron_graph: Graph<Neuron, Synapse, Directed>,
@@ -16,7 +17,8 @@ pub struct Network {
     edges_indices: Vec<Vec<EdgeIndex<u32>>>,
     epoch: i64,
     activation: Activation,
-    output_activation: Activation
+    output_activation: Activation,
+    error_function: ErrorFunc
 }
 
 impl Network {
@@ -24,16 +26,20 @@ impl Network {
     pub fn create(
         shape: Vec<i32>,
         activation: Option<Activation>,
-        output_activation: Option<Activation>) -> Network {
+        output_activation: Option<Activation>,
+        error_function: Option<ErrorFunc>) -> Network {
+
         let activation = activation.unwrap_or(Activation::ReLU);
         let output_activation = output_activation.unwrap_or(Activation::ReLU);
+        let error_function = error_function.unwrap_or(ErrorFunc::Square);
         let mut network = Network {
             neuron_graph: Graph::<Neuron, Synapse>::new(),
             nodes_indices: Vec::<Vec<NodeIndex<u32>>>::new(),
             edges_indices: Vec::<Vec<EdgeIndex<u32>>>::new(),
             epoch: 0i64,
             activation,
-            output_activation
+            output_activation,
+            error_function
         };
         let net_ref = &mut network;
         let amount_of_layers = shape.len();
@@ -103,6 +109,10 @@ impl Network {
         }
         Ok(self.neuron_graph[self.nodes_indices[layer_count - 1][0]].output)
     }
+
+    pub fn back_prop(&mut self, target: f32) {
+
+    }
 }
 
 #[cfg(test)]
@@ -114,7 +124,8 @@ mod tests {
         Network::create(
             [2, 4, 2].to_vec(),
             Option::Some(Activation::Tanh),
-            Option::from(Activation::Sigmoid)
+            Option::from(Activation::Sigmoid),
+            Option::from(ErrorFunc::Square)
         );
     }
 
@@ -125,6 +136,7 @@ mod tests {
         let mut n = Network::create(
             shape,
             Option::from(Activation::ReLU),
+            Option::None,
             Option::None
         );
         // 4 inputs
@@ -139,7 +151,8 @@ mod tests {
         let mut n = Network::create(
             shape,
             Option::from(Activation::Linear),
-            Option::from(Activation::Sigmoid)
+            Option::from(Activation::Sigmoid),
+            Option::None
         );
         let inputs = [1f32, 1000f32, 32f32].to_vec();
         assert!(n.forward_prop(inputs).is_err());
