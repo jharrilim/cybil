@@ -111,7 +111,11 @@ impl Network {
     }
 
     pub fn back_prop(&mut self, target: f32) {
+        let mut layer_count = self.nodes_indices.len() - 1;
+        while layer_count >= 1 {
 
+            layer_count -= 1;
+        }
     }
 }
 
