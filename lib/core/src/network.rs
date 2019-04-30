@@ -1,5 +1,5 @@
 use crate::neuron::Neuron;
-use crate::activation::{Activation, activation_from};
+use crate::activation::{Activation, activation_from, activation_derivative};
 use crate::synapse::Synapse;
 use petgraph::prelude::{
     NodeIndex,
@@ -9,7 +9,7 @@ use petgraph::prelude::{
     Direction
 };
 use petgraph::visit::EdgeRef;
-use crate::error_function::ErrorFunc;
+use crate::error_function::{ErrorFunc, error_derivative};
 
 pub struct Network {
     neuron_graph: Graph<Neuron, Synapse, Directed>,
@@ -82,7 +82,7 @@ impl Network {
         neuron.input_total = input_total;
         neuron.output = activation_from(neuron.activation)(neuron.input_total);
         println!("Neuron output: {}", neuron.output);
-        neuron.output.clone()
+        neuron.output
     }
 
     pub fn forward_prop(&mut self, inputs: Vec<f32>) -> Result<f32, &str> {
@@ -111,6 +111,12 @@ impl Network {
     }
 
     pub fn back_prop(&mut self, target: f32) {
+        let last_layer_idx = self.nodes_indices.len() - 1;
+        let last_layer = &self.nodes_indices[last_layer_idx];
+        let mut output_node = &mut self.neuron_graph[last_layer[0]];
+        output_node.output_derivative = error_derivative(&self.error_function)(output_node.output, target);
+
+
         let mut layer_count = self.nodes_indices.len() - 1;
         while layer_count >= 1 {
 
