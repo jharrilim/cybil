@@ -126,6 +126,12 @@ impl Network {
                 node.accumulated_derivatives += 1;
             }
 
+            for node_index in self.nodes_indices[layer_idx].iter() {
+                let mut node = &mut self.neuron_graph[*node_index];
+                for edge in self.neuron_graph.edges_directed(*node_index, Direction::Incoming) {
+                    // TODO
+                }
+            }
             layer_idx -= 1;
         }
     }

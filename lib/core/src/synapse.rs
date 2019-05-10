@@ -1,12 +1,16 @@
 use rand::{ thread_rng, Rng };
 
 pub struct Synapse {
-    pub weight: f32
+    pub weight: f32,
+    pub is_dead: bool
 }
 
 impl Synapse {
     pub fn new() -> Synapse {
-        Synapse { weight: thread_rng().gen::<f32>() }
+        Synapse {
+            weight: thread_rng().gen::<f32>(),
+            is_dead: false
+        }
     }
 }
 
