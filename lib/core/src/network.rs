@@ -123,6 +123,7 @@ impl Network {
                 let mut node = &mut self.neuron_graph[*node_index];
                 node.input_derivative =
                     node.output_derivative * activation_derivative(node.activation)(node.input_total);
+                node.accumulated_derivatives += 1;
             }
 
             layer_idx -= 1;
