@@ -117,10 +117,15 @@ impl Network {
         output_node.output_derivative = error_derivative(&self.error_function)(output_node.output, target);
 
 
-        let mut layer_count = self.nodes_indices.len() - 1;
-        while layer_count >= 1 {
+        let mut layer_idx = self.nodes_indices.len() - 1;
+        while layer_idx >= 1 {
+            for node_index in self.nodes_indices[layer_idx].iter() {
+                let mut node = &mut self.neuron_graph[*node_index];
+                node.input_derivative =
+                    node.output_derivative * activation_derivative(node.activation)(node.input_total);
+            }
 
-            layer_count -= 1;
+            layer_idx -= 1;
         }
     }
 }
