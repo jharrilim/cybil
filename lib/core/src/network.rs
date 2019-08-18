@@ -119,17 +119,25 @@ impl Network {
 
         let mut layer_idx = self.nodes_indices.len() - 1;
         while layer_idx >= 1 {
+            // Calculate error derivative w
             for node_index in self.nodes_indices[layer_idx].iter() {
                 let mut node = &mut self.neuron_graph[*node_index];
                 node.input_derivative =
                     node.output_derivative * activation_derivative(node.activation)(node.input_total);
+                node.accumulated_input_derivative += node.input_derivative;
                 node.accumulated_derivatives += 1;
             }
 
+            // Calculate error derivative with respect to the weight coming into each node
             for node_index in self.nodes_indices[layer_idx].iter() {
                 let mut node = &mut self.neuron_graph[*node_index];
                 for edge in self.neuron_graph.edges_directed(*node_index, Direction::Incoming) {
-                    // TODO
+                    if edge.weight().is_dead {
+                        continue
+                    }
+                    edge.weight();
+                    // TODO: finish
+
                 }
             }
             layer_idx -= 1;
