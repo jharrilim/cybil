@@ -10,6 +10,7 @@ use petgraph::prelude::{
 };
 use petgraph::visit::EdgeRef;
 use crate::error_function::{ErrorFunc, error_derivative};
+use crate::regularization::Regularization;
 
 pub struct Network {
     neuron_graph: Graph<Neuron, Synapse, Directed>,
@@ -18,7 +19,8 @@ pub struct Network {
     epoch: i64,
     activation: Activation,
     output_activation: Activation,
-    error_function: ErrorFunc
+    error_function: ErrorFunc,
+    regularization: Regularization
 }
 
 impl Network {
@@ -27,11 +29,14 @@ impl Network {
         shape: Vec<i32>,
         activation: Option<Activation>,
         output_activation: Option<Activation>,
-        error_function: Option<ErrorFunc>) -> Network {
+        error_function: Option<ErrorFunc>,
+        regularization: Option<Regularization>
+    ) -> Network {
 
         let activation = activation.unwrap_or(Activation::ReLU);
         let output_activation = output_activation.unwrap_or(Activation::ReLU);
         let error_function = error_function.unwrap_or(ErrorFunc::Square);
+        let regularization = regularization.unwrap_or(Regularization::L1);
         let mut network = Network {
             neuron_graph: Graph::<Neuron, Synapse>::new(),
             nodes_indices: Vec::<Vec<NodeIndex<u32>>>::new(),
@@ -39,7 +44,8 @@ impl Network {
             epoch: 0i64,
             activation,
             output_activation,
-            error_function
+            error_function,
+            regularization
         };
         let net_ref = &mut network;
         let amount_of_layers = shape.len();
@@ -53,7 +59,7 @@ impl Network {
                 // link this neuron with every neuron from the previous layer
                 let mut edge_indices = Vec::<EdgeIndex<u32>>::new();
                 for prev_neur_idx in &net_ref.nodes_indices[layer_idx - 1] {
-                    let syn = Synapse::new();
+                    let syn = Synapse::new(regularization);
                     let edge = net_ref.neuron_graph.add_edge(*prev_neur_idx, neur_idx, syn);
                     edge_indices.push(edge);
                 }
@@ -132,10 +138,14 @@ impl Network {
             for node_index in self.nodes_indices[layer_idx].iter() {
                 let mut node = &mut self.neuron_graph[*node_index];
                 for edge in self.neuron_graph.edges_directed(*node_index, Direction::Incoming) {
-                    if edge.weight().is_dead {
+                    let Synapse {
+                        is_dead,
+                        ..
+                    } = edge.weight();
+                    if *is_dead {
                         continue
                     }
-                    edge.weight();
+
                     // TODO: finish
 
                 }
@@ -155,7 +165,8 @@ mod tests {
             [2, 4, 2].to_vec(),
             Option::Some(Activation::Tanh),
             Option::from(Activation::Sigmoid),
-            Option::from(ErrorFunc::Square)
+            Option::from(ErrorFunc::Square),
+            Option::Some(Regularization::L1)
         );
     }
 
@@ -167,7 +178,8 @@ mod tests {
             shape,
             Option::from(Activation::ReLU),
             Option::None,
-            Option::None
+            Option::None,
+            Option::Some(Regularization::L2)
         );
         // 4 inputs
         let inputs = [1f32, 5f32, 2601f32, 19238.192f32].to_vec();
@@ -182,7 +194,8 @@ mod tests {
             shape,
             Option::from(Activation::Linear),
             Option::from(Activation::Sigmoid),
-            Option::None
+            Option::None,
+            Option::from(Regularization::L1)
         );
         let inputs = [1f32, 1000f32, 32f32].to_vec();
         assert!(n.forward_prop(inputs).is_err());

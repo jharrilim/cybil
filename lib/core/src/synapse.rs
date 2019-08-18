@@ -1,4 +1,5 @@
 use rand::{ thread_rng, Rng };
+use crate::regularization::Regularization;
 
 pub struct Synapse {
     pub weight: f32,
@@ -6,18 +7,18 @@ pub struct Synapse {
     pub error_der: f32,
     pub accumulated_error_der: f32,
     pub total_accumulated_error_der: f32,
-    pub regularization_function: fn()
+    pub regularization: Regularization
 }
 
 impl Synapse {
-    pub fn new() -> Synapse {
+    pub fn new(regularization: Regularization) -> Synapse {
         Synapse {
             weight: thread_rng().gen::<f32>(),
             is_dead: false,
             error_der: 0f32,
             accumulated_error_der: 0f32,
             total_accumulated_error_der: 0f32,
-            regularization_function: | | { }
+            regularization
         }
     }
 }
@@ -29,6 +30,6 @@ mod tests {
 
     #[test]
     pub fn create_synapse() {
-        Synapse::new();
+        Synapse::new(Regularization::L1);
     }
 }
