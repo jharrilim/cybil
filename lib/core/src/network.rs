@@ -122,10 +122,8 @@ impl Network {
         let mut output_node = &mut self.neuron_graph[last_layer[0]];
         output_node.output_derivative = error_derivative(&self.error_function)(output_node.output, target);
 
-
         let mut layer_idx = self.nodes_indices.len() - 1;
         while layer_idx >= 1 {
-            // Calculate error derivative w
             for node_index in self.nodes_indices[layer_idx].iter() {
                 let mut node = &mut self.neuron_graph[*node_index];
                 node.input_derivative =
@@ -138,7 +136,6 @@ impl Network {
             for node_index in self.nodes_indices[layer_idx].iter() {
                 let mut node = &self.neuron_graph[*node_index];
                 for edge in self.neuron_graph.edges_directed(*node_index, Direction::Incoming) {
-
                     let &Synapse {
                         is_dead,
                         mut error_der,
@@ -154,6 +151,7 @@ impl Network {
                     total_accumulated_error_der += 1;
                 }
             }
+
             if layer_idx == 1 {
                 continue
             }
@@ -164,10 +162,11 @@ impl Network {
                     ..
                 }  = &self.neuron_graph[*node_index];
                 output_derivative = 0f32;
+                for edge in self.neuron_graph.edges_directed(*node_index, Direction::Outgoing) {
+                    let input_derivative = self.neuron_graph[edge.target()].input_derivative;
+                    output_derivative += edge.weight().weight * input_derivative;
+                }
             }
-
-
-
             layer_idx -= 1;
         }
     }
