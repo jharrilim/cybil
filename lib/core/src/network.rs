@@ -139,13 +139,13 @@ impl Network {
                 let mut node = &self.neuron_graph[*node_index];
                 for edge in self.neuron_graph.edges_directed(*node_index, Direction::Incoming) {
 
-                    let &mut Synapse {
+                    let &Synapse {
                         is_dead,
                         mut error_der,
                         mut accumulated_error_der,
                         mut total_accumulated_error_der,
                         ..
-                    } = &mut edge.weight();
+                    } = &edge.weight();
                     if *is_dead {
                         continue
                     }
@@ -157,6 +157,17 @@ impl Network {
             if layer_idx == 1 {
                 continue
             }
+
+            for node_index in self.nodes_indices[layer_idx - 1].iter() {
+                let &Neuron {
+                    mut output_derivative,
+                    ..
+                }  = &self.neuron_graph[*node_index];
+                output_derivative = 0f32;
+            }
+
+
+
             layer_idx -= 1;
         }
     }
