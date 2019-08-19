@@ -136,19 +136,26 @@ impl Network {
 
             // Calculate error derivative with respect to the weight coming into each node
             for node_index in self.nodes_indices[layer_idx].iter() {
-                let mut node = &mut self.neuron_graph[*node_index];
+                let mut node = &self.neuron_graph[*node_index];
                 for edge in self.neuron_graph.edges_directed(*node_index, Direction::Incoming) {
-                    let Synapse {
+
+                    let &mut Synapse {
                         is_dead,
+                        mut error_der,
+                        mut accumulated_error_der,
+                        mut total_accumulated_error_der,
                         ..
-                    } = edge.weight();
+                    } = &mut edge.weight();
                     if *is_dead {
                         continue
                     }
-
-                    // TODO: finish
-
+                    error_der = node.input_derivative * self.neuron_graph[edge.source()].output;
+                    accumulated_error_der += edge.weight().error_der;
+                    total_accumulated_error_der += 1;
                 }
+            }
+            if layer_idx == 1 {
+                continue
             }
             layer_idx -= 1;
         }
