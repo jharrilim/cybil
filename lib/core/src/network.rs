@@ -124,6 +124,7 @@ impl Network {
 
         let mut layer_idx = self.nodes_indices.len() - 1;
         while layer_idx >= 1 {
+            println!("Loop: {}", layer_idx);
             for node_index in self.nodes_indices[layer_idx].iter() {
                 let mut node = &mut self.neuron_graph[*node_index];
                 node.input_derivative =
@@ -153,7 +154,7 @@ impl Network {
             }
 
             if layer_idx == 1 {
-                continue
+                break
             }
 
             for node_index in self.nodes_indices[layer_idx - 1].iter() {
@@ -168,6 +169,7 @@ impl Network {
                 }
             }
             layer_idx -= 1;
+            print!("{} ", layer_idx)
         }
     }
 }
@@ -216,5 +218,19 @@ mod tests {
         );
         let inputs = [1f32, 1000f32, 32f32].to_vec();
         assert!(n.forward_prop(inputs).is_err());
+    }
+
+    #[test]
+    pub fn back_prop_correctly_increases_totals() {
+        let shape = vec![3, 3, 3];
+        let mut n = Network::create(
+            shape,
+            Option::from(Activation::Linear),
+            Option::from(Activation::Sigmoid),
+            Option::None,
+            Option::from(Regularization::L1)
+        );
+        let inputs = vec![1f32, 12f32, 19.1281f32];
+        n.back_prop(18f32);
     }
 }
