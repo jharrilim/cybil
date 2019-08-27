@@ -1,3 +1,5 @@
+/// Cybil is a Neural Network with support for usage in Javascript applications by using WASM.
+
 extern crate wasm_bindgen;
 extern crate rand;
 extern crate petgraph;
@@ -7,12 +9,12 @@ use crate::activation::Activation;
 use crate::error_function::ErrorFunc;
 use crate::regularization::Regularization;
 
-mod activation;
-mod neuron;
-mod network;
-mod synapse;
-mod error_function;
-mod regularization;
+pub mod activation;
+pub mod neuron;
+pub mod network;
+pub mod synapse;
+pub mod error_function;
+pub mod regularization;
 
 #[wasm_bindgen]
 extern {
