@@ -1,4 +1,18 @@
+/// This module provides activation functions for usage within the Neural Network.
+/// To make use of them, you may select them with the `activation_from` and `activation_derivative`
+/// functions.
+///
+/// # Examples
+///
+/// ## Requesting a ReLU Function
+///
+/// ```
+/// let f = activation_from(Activation::ReLU);
+/// assert_eq!(f(10) > 0, true);
+/// ```
 
+
+/// Contains names of the available Activation functions.
 #[derive(Copy, Clone)]
 pub enum Activation {
     Sigmoid,
